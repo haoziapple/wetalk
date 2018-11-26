@@ -1,6 +1,7 @@
 package github.haozi.mock;
 
 import github.haozi.entity.Quote;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
  * Created by ASUS on 2018/11/25.
  */
 @Component
+@Slf4j
 public class QuoteGenerator {
     private final MathContext mathContext = new MathContext(2);
 
@@ -48,7 +50,7 @@ public class QuoteGenerator {
                 .map(this::generateQuotes)
                 // "flatten" that List<Quote> into a Flux<Quote>
                 .flatMapIterable(quotes -> quotes)
-                .log("io.spring.workshop.stockquotes");
+                .log();
     }
 
     /**
@@ -59,7 +61,7 @@ public class QuoteGenerator {
         return prices.stream()
                 .map(baseQuote -> {
                     BigDecimal priceChange = baseQuote.getPrice()
-                            .multiply(new BigDecimal(0.05 * this.random.nextDouble()), this.mathContext);
+                            .multiply(BigDecimal.valueOf(0.05 * this.random.nextDouble()), this.mathContext);
                     Quote result = new Quote(baseQuote.getTicker(), baseQuote.getPrice().add(priceChange));
                     result.setInstant(instant);
                     return result;
